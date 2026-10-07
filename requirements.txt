@@ -1,0 +1,15 @@
+# Pinned to the versions the committed RESULTS.md and figures/ were generated
+# with (Python 3.13.12, x86-64 Linux). The study is deterministic: every
+# simulation seeds its own generator, so a matching stack reproduces the
+# committed numbers exactly.
+#
+# Needs Python 3.12 or newer: numpy 2.5 and scipy 1.18 have no wheels for 3.11.
+numpy==2.5.0
+scipy==1.18.0
+pandas==3.0.3
+statsmodels==0.14.6
+matplotlib==3.11.0
+
+# Against an older stack, these are the API floors the code actually requires:
+#   numpy>=1.24  scipy>=1.10 (stats.binomtest)  pandas>=2.0
+#   statsmodels>=0.13 (multipletests fdr_bh)  matplotlib>=3.7

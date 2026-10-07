@@ -1,0 +1,4 @@
+# Test-only dependencies. The toolkit and the study need nothing beyond
+# requirements.txt; this is for `pytest tests/`.
+-r requirements.txt
+pytest==9.0.1
