@@ -62,3 +62,20 @@ def test_pairing_needs_fewer_items_than_not_pairing():
     paired_n = power.required_items_paired(0.05, 0.25)
     unpaired_n = power.required_items_unpaired(0.80, 0.85)
     assert paired_n < unpaired_n
+
+
+def test_mde_reports_nothing_when_no_difference_is_detectable():
+    """A small eval with rare disagreement can rule out nothing.
+
+    The largest difference the discordance rate admits is the discordance rate
+    itself. If even that is undetectable, every value in range is undetectable,
+    and returning the bound would claim the opposite of what holds.
+    """
+    n, disc = 50, 0.10
+    assert power.power_paired(n, disc, disc) < 0.80
+    assert np.isnan(power.mde_paired(n, disc))
+
+    # Same discordance, enough items: an answer exists and sits under the bound.
+    d = power.mde_paired(2_000, disc)
+    assert not np.isnan(d)
+    assert 0 < d < disc

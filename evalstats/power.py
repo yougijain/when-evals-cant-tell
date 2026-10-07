@@ -97,7 +97,15 @@ def mde_paired(n: int, discordance: float, target_power: float = 0.80,
 
     The honest headline for an eval that found nothing: not "no difference",
     but "no difference larger than this would reliably have shown up".
+
+    A difference cannot exceed the discordance rate, so the search is bounded
+    above by it. When even that largest admissible difference falls short of
+    `target_power`, there is no answer to give and this returns nan rather than
+    the bound, which would read as a detectable difference and is the opposite
+    of the truth: at that n the eval can rule out nothing at all.
     """
+    if power_paired(n, discordance, discordance, alpha) < target_power:
+        return float("nan")
     lo, hi = 0.0, discordance
     while hi - lo > tol:
         mid = (lo + hi) / 2
