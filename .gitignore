@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep the committed outputs (figures/ and RESULTS.md) so the repo reads
+# without a run. Comment the lines below out to regenerate them instead.
+# figures/
+# RESULTS.md
