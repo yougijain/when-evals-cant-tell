@@ -60,8 +60,10 @@ def paired(a, b, n_boot: int = 10_000, seed: int = 0) -> Comparison:
     a, b = _check(a, b)
     rng = np.random.default_rng(seed)
     d = b - a
-    boot = np.array([rng.choice(d, len(d), replace=True).mean()
-                     for _ in range(n_boot)])
+    # All resamples at once. The loop version costs ~0.2s per call, which is
+    # nothing on its own and forty minutes inside a coverage study.
+    idx = rng.integers(0, len(d), size=(n_boot, len(d)))
+    boot = d[idx].mean(axis=1)
     ci = (float(np.percentile(boot, 2.5)), float(np.percentile(boot, 97.5)))
 
     if _is_binary(a, b):

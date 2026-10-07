@@ -69,3 +69,24 @@ def test_continuous_scores_use_a_paired_t_test():
 def test_mismatched_lengths_are_rejected():
     with pytest.raises(ValueError, match="one score per system per item"):
         compare.paired([1, 0, 1], [1, 0])
+
+
+def test_bootstrap_interval_covers_the_truth_at_the_nominal_rate():
+    """The interval is only worth printing if it means what it says.
+
+    400 evals with a known 5-point true difference; the 95% interval should
+    contain it about 95% of the time. This is the check that makes every CI
+    elsewhere in the repo trustworthy, and it is why the bootstrap is
+    vectorised - the loop version makes this study take forty minutes.
+    """
+    rng = np.random.default_rng(7)
+    delta, disc, n = 0.05, 0.25, 400
+    p10, p01 = (disc + delta) / 2, (disc - delta) / 2
+    covered = 0
+    for _ in range(400):
+        cell = rng.choice(3, n, p=[p10, p01, 1 - p10 - p01])
+        a = (cell == 1).astype(float)
+        b = (cell == 0).astype(float)
+        lo, hi = compare.paired(a, b, n_boot=2000, seed=int(rng.integers(1e6))).ci
+        covered += lo <= delta <= hi
+    assert 0.92 <= covered / 400 <= 0.98, covered / 400
