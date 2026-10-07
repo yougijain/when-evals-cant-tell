@@ -1,0 +1,42 @@
+# Two jobs. `pytest` checks the toolkit's behaviour; `reproduce` re-runs the
+# study and fails if RESULTS.md comes out any different from the committed
+# copy, so the numbers in that file cannot quietly stop matching the code.
+# Nothing here touches the network: every input is simulated.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - run: pytest tests/ -q
+
+  reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+      - run: python study.py
+      # Figures are left out: PNG bytes move with the renderer, the numbers
+      # do not.
+      - name: RESULTS.md matches the committed copy
+        run: git diff --exit-code -- RESULTS.md
