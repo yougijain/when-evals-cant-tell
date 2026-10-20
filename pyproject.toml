@@ -1,0 +1,9 @@
+# Config only. The toolkit is a plain package you run from the repo root, not
+# something to install, so there is no [project] table here.
+[tool.pytest.ini_options]
+# Put the repo root on sys.path so `pytest tests/` imports evalstats the same
+# way `python -m pytest` and `python study.py` already do. Without it, pytest's
+# prepend import mode adds only tests/, and every test module fails to import
+# at collection: green under one invocation, red under another.
+pythonpath = ["."]
+testpaths = ["tests"]
